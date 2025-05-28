@@ -72,7 +72,7 @@ def store_chat_info(info: Any, context: str) -> str:
     entry = {"info": info, "context": context, "timestamp": timestamp}
     print(f"[CHAT INFO] Info: {repr(info)} | Context: {context} | Timestamp: {timestamp}")
     chat_history.append(entry)
-    write_chat_history_markdown()  # Always update the markdown file
+    write_chat_history_markdown(entry)  # Always update the markdown file
     return f"Info and context stored. Total items: {len(chat_history)}"
 
 # Helper function to write markdown tables from a list of dicts
@@ -139,16 +139,16 @@ def format_chat_history_entry(entry: dict, entry_number: int) -> str:
         lines.append(f"[Unrecognized info type: {type(entry['info']).__name__}]\n\n")
     return "".join(lines)
 
-def write_chat_history_markdown(filename: str = "chat_history.md") -> str:
-    """Append the chat_history to a markdown file, nicely formatted."""
+def write_chat_history_markdown(entry: dict, filename: str = "chat_history.md") -> str:
+    """Append a single chat history entry to a markdown file, nicely formatted."""
+    print(f"entry: {entry}")
     file_exists = os.path.exists(filename)
     with open(filename, "a") as f:
         if not file_exists:
             f.write("# Chat History\n\n")
-        for i, entry in enumerate(chat_history, 1):
-            entry_md = format_chat_history_entry(entry, i)
-            f.write(entry_md)
-    return f"Chat history appended to {filename}"
+        entry_md = format_chat_history_entry(entry, 1)
+        f.write(entry_md)
+    return f"Entry appended to {filename}"
 
 @mcp.prompt("joke")
 async def joke(text: str) -> list[dict]:

@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+venv/
 env/
 build/
 develop-eggs/
@@ -48,14 +49,48 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.target/
+
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
 
 # pyenv
 .python-version
 
 # pipenv
 Pipfile.lock
+
+# poetry
+poetry.lock
+
+# dotenv
+.env
+.env.*
 
 # mypy
 .mypy_cache/

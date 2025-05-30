@@ -1,14 +1,13 @@
-# MCP Calculator Server
+# MCP Todo Server
 
-This project provides a simple MCP (Modular Command Platform) server for calculator operations and chat history management. It is designed to be easily integrated with tools like Cursor and can be extended for more advanced automation and documentation workflows.
+A simple MCP (Modular Command Platform) server for chat history management and information tracking. This project is designed to integrate with AI assistants like Claude to provide enhanced functionality.
 
 ## Features
 
-- 🧮 Basic calculator operations (add, subtract, multiply, divide)
-- 📝 Chat history management with markdown formatting
-- 🔄 Automatic timestamp handling and pretty formatting
-- 📊 Support for various data structures (lists, dictionaries, tables)
-- 🎨 Beautiful markdown output for chat logs
+- 📝 Chat history management with timestamp tracking
+- 🔄 Tool list tracking for AI operations
+- 🎨 Command-line logging of chat operations
+- 🚀 Built on FastMCP for easy integration
 
 ## System Requirements
 
@@ -21,7 +20,7 @@ This project provides a simple MCP (Modular Command Platform) server for calcula
 1. Clone this repository:
    ```bash
    git clone <your-repo-url>
-   cd <your-repo-directory>
+   cd mcp_todo
    ```
 2. (Recommended) Create and activate a virtual environment:
    ```bash
@@ -41,31 +40,20 @@ This project provides a simple MCP (Modular Command Platform) server for calcula
 python calculator_server.py
 ```
 
-The server will start and listen for incoming requests.
+The server will start and listen for incoming requests on the default port.
 
 ### Available Operations
 
-#### Calculator
+#### Store Chat Information
 ```python
-# Example calculator operations
-calculator("add", 5, 3)      # Returns: 8
-calculator("multiply", 4, 2)  # Returns: 8
-calculator("divide", 10, 2)   # Returns: 5
+# Store information about the current chat
+store_chat_info(info, context, tool_list)
 ```
 
-#### Chat History
-```python
-# Store simple text
-store_chat_info("Hello, world!", "Greeting message")
-
-# Store structured data
-info = {
-    'summary': 'Example function',
-    'code': 'print("Hello")',
-    'language': 'python'
-}
-store_chat_info(info, "Code example")
-```
+Parameters:
+- `info`: Any data that needs to be stored (text, dictionaries, lists, etc.)
+- `context`: String describing the context of the stored information
+- `tool_list`: List of tools available for the current operation
 
 ## Project Structure
 
@@ -80,22 +68,12 @@ store_chat_info(info, "Code example")
 
 ## Development
 
-### Code Style
+### Future Enhancements
 
-- Follow PEP 8 guidelines
-- Use type hints where possible
-- Include docstrings for all functions and classes
-- Keep functions focused and single-purpose
-
-### Testing
-
-(Coming soon)
-
-## TODOs
-
-- [ ] Document how to start the MCP server & integrate with Cursor, including some screen grabs
-- [ ] Improve the debugging so we can get better insight into how we're getting called from the LLM
-- [ ] Research and experiment with different doc strings
+- Extend the functionality with additional MCP tools
+- Add persistent storage for chat history
+- Implement user authentication
+- Create a web interface for easier interaction
 
 ## License
 
@@ -103,7 +81,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Built with [FastMCP](link-to-fastmcp)
-- Inspired by the need for better LLM integration tools
+- Built with [FastMCP](https://github.com/mcp-team/fastmcp) framework
+- Designed for integration with Claude and other AI assistants
 
 ---

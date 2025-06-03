@@ -106,4 +106,5 @@ poetry.lock
 .DS_Store
 
 # Chat history and generated files
+chat_history/
 chat_history.md 

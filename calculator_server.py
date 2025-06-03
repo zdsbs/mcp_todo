@@ -6,6 +6,7 @@ import logging
 import traceback
 import json
 import textwrap
+import re  # Import the regular expression module
 
 mcp = FastMCP("stuff")
 
@@ -108,24 +109,32 @@ def format_chat_history(input_filename: str, output_filename: str) -> None:
         # Open the output file in write mode, which will create the file if it doesn't exist
         with open(output_filename, 'w') as out_file:
             for message in conversation_history:
-                # Split the content into lines to handle bullet points
-                lines = message['content'].splitlines()
-                formatted_lines = []
+                if message['role'] == 'assistant':  # Check if the message role is 'assistant'
+                    # Split the content into lines to handle bullet points
+                    lines = message['content'].splitlines()
+                    formatted_lines = []
 
-                for line in lines:
-                    if line.startswith('- '):  # Check for bullet points
-                        formatted_lines.append(line)  # Keep bullet points as is
-                    else:
-                        # Wrap the content to a specified width (e.g., 70 characters)
-                        wrapped_content = textwrap.fill(line, width=70)
-                        formatted_lines.append(wrapped_content)
+                    for line in lines:
+                        # Remove Markdown formatting using regex
+                        line = re.sub(r'\*\*(.*?)\*\*', r'\1', line)  # Remove ** around text
+                        line = re.sub(r'^\s*#{2,6}\s*', '', line, flags=re.MULTILINE) # Remove ##, ### and up
 
-                # Join the formatted lines back together
-                formatted_message = (
-                    f"{message['role']}:\n" + "\n".join(formatted_lines) + "\n"  # Include the role and wrapped content
-                    f"{'-' * 40}\n"  # Separator for readability
-                )
-                out_file.write(formatted_message)
+
+                        # Check for numbered bullet points (e.g., 1., 2., 3.)
+                        if line.strip() and line[0].isdigit() and line[1] == '.':
+                            formatted_lines.append(f"  {line}")  # Indent numbered bullet points
+                            continue
+
+                        # Keep code examples as is
+                        formatted_lines.append(line)
+
+                    # Join the formatted lines back together
+                    formatted_message = (
+                        f"{message['role'].capitalize()}:\n" +  
+                        "\n".join(formatted_lines) + "\n" +  
+                        f"{'-' * 50}\n"  # Separator for readability
+                    )
+                    out_file.write(formatted_message)
 
     except FileNotFoundError:
         print(f"Error: The file {input_filename} does not exist.")

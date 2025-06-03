@@ -68,13 +68,20 @@ def store_chat_info(model_name: str, conversation_history: list) -> str:
         else:
             existing_data = []
 
-        existing_data.append(conversation_history)
+        # Extract existing IDs from the existing data
+        existing_ids = {msg["id"] for msg in existing_data}
+
+        # Filter out messages with IDs that already exist
+        new_messages = [msg for msg in conversation_history if msg["id"] not in existing_ids]
+
+        # Append only new messages to existing data
+        existing_data.extend(new_messages)
 
         with open(filename, 'w') as f:
             json.dump(existing_data, f, indent=4)
 
         logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
-        logging.info(f"[CHAT INFO] Info: {info} | Conversation History: {conversation_history}")
+        logging.info(f"[CHAT INFO] Info: {info} | New Messages: {new_messages}")
         return "Conversation history stored"
     except Exception as e:
         logging.error(f"Failed to store conversation history: {e}\n{traceback.format_exc()}")

@@ -5,6 +5,7 @@ import datetime
 import logging
 import traceback
 import json
+import textwrap
 
 mcp = FastMCP("stuff")
 
@@ -87,5 +88,53 @@ def store_chat_info(model_name: str, conversation_history: list) -> str:
         logging.error(f"Failed to store conversation history: {e}\n{traceback.format_exc()}")
         return f"Error: {e}"
 
+def format_chat_history(input_filename: str, output_filename: str) -> None:
+    """
+    Reads the conversation history from a JSON file and saves it in a human-readable format to another file.
+
+    Parameters:
+    - input_filename: The path to the JSON file containing the conversation history.
+    - output_filename: The path to the file where the formatted output will be saved.
+    """
+    try:
+        # Ensure the directory for the output file exists
+        output_dir = os.path.dirname(output_filename)
+        os.makedirs(output_dir, exist_ok=True)
+
+        # Read the conversation history from the input file
+        with open(input_filename, 'r') as f:
+            conversation_history = json.load(f)
+
+        # Open the output file in write mode, which will create the file if it doesn't exist
+        with open(output_filename, 'w') as out_file:
+            for message in conversation_history:
+                # Split the content into lines to handle bullet points
+                lines = message['content'].splitlines()
+                formatted_lines = []
+
+                for line in lines:
+                    if line.startswith('- '):  # Check for bullet points
+                        formatted_lines.append(line)  # Keep bullet points as is
+                    else:
+                        # Wrap the content to a specified width (e.g., 70 characters)
+                        wrapped_content = textwrap.fill(line, width=70)
+                        formatted_lines.append(wrapped_content)
+
+                # Join the formatted lines back together
+                formatted_message = (
+                    f"{message['role']}:\n" + "\n".join(formatted_lines) + "\n"  # Include the role and wrapped content
+                    f"{'-' * 40}\n"  # Separator for readability
+                )
+                out_file.write(formatted_message)
+
+    except FileNotFoundError:
+        print(f"Error: The file {input_filename} does not exist.")
+    except json.JSONDecodeError:
+        print("Error: Failed to decode JSON from the file.")
+    except Exception as e:
+        print(f"An error occurred while writing to the file: {e}")
+
+# Example usage
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http") 
+    format_chat_history("chat_history/conversation_history.json", "chat_history/pretty_chat_history.txt")  # Call the new function 
+    mcp.run(transport="streamable-http")

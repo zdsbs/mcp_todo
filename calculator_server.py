@@ -4,6 +4,7 @@ import os
 import datetime
 import logging
 import traceback
+import json
 
 mcp = FastMCP("stuff")
 
@@ -42,11 +43,6 @@ def store_chat_info(model_name: str, conversation_history: list) -> str:
     Automatically infers 'info' from the last assistant message.
     """
     try:
-        for i, message in enumerate(conversation_history, 1):
-            print(f"Message {i}:")
-            print(f"  Role: {message['role']}")
-            print(f"  Content: {message['content']}\n")
-
         last_response = conversation_history[-1]["content"]
         timestamp = datetime.datetime.now().isoformat()
 
@@ -56,11 +52,32 @@ def store_chat_info(model_name: str, conversation_history: list) -> str:
             "model_name": model_name
         }
 
+        # Create a directory for chat history if it doesn't exist
+        os.makedirs("chat_history", exist_ok=True)
+
+        # Define the filename for the conversation history
+        filename = "chat_history/conversation_history.json"
+
+        # Assign unique IDs to each message in the conversation history
+        for index, message in enumerate(conversation_history):
+            message["id"] = index + 1  # Unique ID based on index (1-based)
+
+        if os.path.exists(filename):
+            with open(filename, 'r') as f:
+                existing_data = json.load(f)
+        else:
+            existing_data = []
+
+        existing_data.append(conversation_history)
+
+        with open(filename, 'w') as f:
+            json.dump(existing_data, f, indent=4)
+
         logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
         logging.info(f"[CHAT INFO] Info: {info} | Conversation History: {conversation_history}")
-        return "Chat info stored"
+        return "Conversation history stored"
     except Exception as e:
-        logging.error(f"Failed to store chat info: {e}\n{traceback.format_exc()}")
+        logging.error(f"Failed to store conversation history: {e}\n{traceback.format_exc()}")
         return f"Error: {e}"
 
 if __name__ == "__main__":
